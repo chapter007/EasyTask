@@ -4,11 +4,4 @@
     android:shape="rectangle" >
 
     <solid android:color="#939393" />
-
-
-    <padding
-        android:bottom="10dp"
-        android:left="10dp"
-        android:right="10dp"
-        android:top="10dp" />
 </shape>

@@ -29,6 +29,7 @@ public class MyWindowManager {
     private static WindowManager mWindowManager;
 
     private static SharedPreferences sharedPreferences;
+    public static int screenHeight;
     /**
      * 创建一个小悬浮窗。初始位置为屏幕的右部中间位置。
      *
@@ -38,7 +39,8 @@ public class MyWindowManager {
     public static void createEasyPoint(Context context,AccessibilityService service,Vibrator vibrator) {
         WindowManager windowManager = getWindowManager(context);
         int screenWidth = windowManager.getDefaultDisplay().getWidth();
-        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        screenHeight = windowManager.getDefaultDisplay().getHeight();
+
         if (smallWindow == null) {
             smallWindow = new TaskBarView(context,service,vibrator);
             if (smallWindowParams == null) {
@@ -47,11 +49,12 @@ public class MyWindowManager {
                 smallWindowParams.format = PixelFormat.RGBA_8888;
                 smallWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-                smallWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
-                smallWindowParams.width = TaskBarView.viewWidth;
+                smallWindowParams.gravity = Gravity.LEFT|Gravity.BOTTOM;
+                smallWindowParams.width = screenWidth;
                 smallWindowParams.height = screenHeight;
-                smallWindowParams.x = screenWidth;
-                //smallWindowParams.y = screenHeight / 2;
+                //smallWindowParams.x = screenWidth;
+                //smallWindowParams.y = 20;
+
             }
             sharedPreferences=context.getSharedPreferences("setting", Context.MODE_PRIVATE);
             sharedPreferences.edit().putInt("origin",smallWindowParams.width).commit();
@@ -61,7 +64,6 @@ public class MyWindowManager {
     }
 
     public static void updateEasyPoint(Context context,int vib,int alpha,int size) {
-        //Log.i("vib alpha-->",vib+"//"+alpha+"//"+size);
         if (smallWindow != null) {
             View point=smallWindow.findViewById(R.id.point_view);
             if (vib!=0){
@@ -78,7 +80,6 @@ public class MyWindowManager {
                 smallWindowParams.height = (int) (width*origin_width);
                 point.getLayoutParams().width= (int) (width*origin_width);
                 point.getLayoutParams().height= (int) (width*origin_width);
-                //Log.i("width",origin_width+"//"+smallWindowParams.width+"//"+width*origin_width);
                 smallWindow.setParams(smallWindowParams);
                 WindowManager manager= (WindowManager) context.getSystemService(context.WINDOW_SERVICE);
                 manager.updateViewLayout(smallWindow, smallWindowParams);

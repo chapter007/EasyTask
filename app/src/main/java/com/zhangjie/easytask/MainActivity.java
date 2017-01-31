@@ -246,12 +246,9 @@ public class MainActivity extends AppCompatActivity {
         AccessibilityManager manager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         List<AccessibilityServiceInfo> list = AccessibilityManagerCompat.getEnabledAccessibilityServiceList(manager,
                 AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-        //System.out.println("list.size = " + list.size());
         if (list.size()==0) isEnabled=false;
         for (int i = 0; i < list.size(); i++) {
-            //System.out.println("已经可用的服务列表 = " + list.get(i).getId());
             if ("com.zhangjie.easytask/.EasyTask".equals(list.get(i).getId())) {
-                //System.out.println("已启用");
                 isEnabled = true;
                 break;
             }
