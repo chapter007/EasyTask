@@ -30,6 +30,7 @@ public class MyWindowManager {
 
     private static SharedPreferences sharedPreferences;
     public static int screenHeight;
+    private static Context mContext;
     /**
      * 创建一个小悬浮窗。初始位置为屏幕的右部中间位置。
      *
@@ -40,9 +41,9 @@ public class MyWindowManager {
         WindowManager windowManager = getWindowManager(context);
         int screenWidth = windowManager.getDefaultDisplay().getWidth();
         screenHeight = windowManager.getDefaultDisplay().getHeight();
-
+        mContext=context;
         if (smallWindow == null) {
-            smallWindow = new TaskBarView(context,service,vibrator);
+            smallWindow = new TaskBarView(context,service);
             if (smallWindowParams == null) {
                 smallWindowParams = new WindowManager.LayoutParams();
                 smallWindowParams.type = WindowManager.LayoutParams.TYPE_PHONE;
@@ -67,7 +68,7 @@ public class MyWindowManager {
         if (smallWindow != null) {
             View point=smallWindow.findViewById(R.id.point_view);
             if (vib!=0){
-                smallWindow.setVibrator_val(vib-1);
+                //smallWindow.setVibrator_val(vib-1);
             }
             if (alpha!=0){
                 point.getBackground().setAlpha(alpha-1);
@@ -124,4 +125,5 @@ public class MyWindowManager {
             smallWindow = null;
         }
     }
+
 }

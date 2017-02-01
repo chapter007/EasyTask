@@ -29,7 +29,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private boolean isEnabled;
+    private boolean isEnabled=true;
     private SharedPreferences setting;
 
     @Override
@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         Button set_alpha= (Button) findViewById(R.id.set_alpha);
         Button set_size= (Button) findViewById(R.id.set_size);
         final LinearLayout tip= (LinearLayout) findViewById(R.id.tip);
-        checkService();
+        //checkService();
+
         if(isEnabled){tip.setVisibility(View.VISIBLE);}
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        checkService();
+        //checkService();
     }
 
     private class positiveListener implements DialogInterface.OnClickListener {
@@ -239,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent("android.settings.ACCESSIBILITY_SETTINGS"));
         }
     }
-
 
 
     public void checkService(){

@@ -15,5 +15,12 @@
         android:layout_height="20dp"
         android:orientation="horizontal"
         android:id="@+id/point_view"
-        android:background="#ffffff"/>
+        android:background="#ffffff"
+        android:gravity="bottom">
+
+    <com.zhangjie.easytask.HorizontalListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/app_list"></com.zhangjie.easytask.HorizontalListView>
+    </LinearLayout>
 </LinearLayout>

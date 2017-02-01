@@ -1,13 +1,22 @@
 package com.zhangjie.easytask;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.jaredrummler.android.processes.AndroidProcesses;
+import com.jaredrummler.android.processes.models.AndroidAppProcess;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,8 +34,18 @@ public class EasyTask extends AccessibilityService {
     }
 
 
-    public EasyTask(){
-        service=this;
+    public EasyTask() {
+        service = this;
+    }
+
+    @Override
+    public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
+
+    }
+
+    @Override
+    public void onInterrupt() {
+
     }
 
     /**
@@ -41,18 +60,12 @@ public class EasyTask extends AccessibilityService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //开启定时器，每隔5秒检测一下
-        /*if (timer==null){
-            timer=new Timer();
-            timer.scheduleAtFixedRate(new RefreshTask(),1000,5000);
-        }*/
 
-        vibrator= (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        //创建小圆点
+        //创建taskBar
         handler.post(new Runnable() {
             @Override
             public void run() {
-                MyWindowManager.createEasyPoint(getApplicationContext(), service,vibrator);
+                MyWindowManager.createEasyPoint(getApplicationContext(), service, vibrator);
             }
         });
         return super.onStartCommand(intent, flags, startId);
@@ -62,9 +75,9 @@ public class EasyTask extends AccessibilityService {
     public void onDestroy() {
         super.onDestroy();
         //计时器也销毁
-        Log.i("destroy","");
+        Log.i("destroy", "");
         timer.cancel();
-        timer=null;
+        timer = null;
         //关闭圆点
         handler.post(new Runnable() {
             @Override
@@ -74,27 +87,45 @@ public class EasyTask extends AccessibilityService {
         });
     }
 
-    @Override
-    public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
+    public List getRunningProcess(Context context) {
+        PackagesInfo pi = new PackagesInfo(context);
+        //ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+        //获取正在运行的应用
+        List<AndroidAppProcess> run = AndroidProcesses.getRunningAppProcesses();
+        //获取包管理器，在这里主要通过包名获取程序的图标和程序名
+        PackageManager pm = context.getPackageManager();
+        List list = new ArrayList();
+        for (AndroidAppProcess ra : run) {
 
+            Program pr = new Program();
+            ApplicationInfo info=pi.getInfo(ra.getPackageName());
+            Drawable icon = null;
+            String name = null;
+            if (info!=null){
+                icon=info.loadIcon(pm);
+                name=info.loadLabel(pm).toString();
+                System.out.println(info.loadLabel(pm).toString());
+            }
+            pr.setIcon(icon);
+            pr.setName(name);
+            list.add(pr);
+        }
+        return list;
     }
 
-    @Override
-    public void onInterrupt() {
-
-    }
-
-    class RefreshTask extends TimerTask{
+    class RefreshTask extends TimerTask {
         //检测横屏隐藏圆点
         @Override
         public void run() {
 
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
+            handler.post(new Runnable() {
+                public static final String TAG ="test";
 
-                    }
-                });
+                @Override
+                public void run() {
+
+                }
+            });
 
 
         }

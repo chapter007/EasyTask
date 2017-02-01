@@ -3,29 +3,21 @@ package com.zhangjie.easytask;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * Created by zhangjie on 2016/1/30.
  */
 public class TaskBarView extends LinearLayout {
-    /**
-     * 记录小圆点的宽度
-     */
-    public static int viewWidth;
-    /**
-     * 记录小圆点的高度
-     */
-    public static int viewHeight;
     /**
      * 记录系统状态栏的高度
      */
@@ -65,31 +57,24 @@ public class TaskBarView extends LinearLayout {
      */
     private float yInView;
     private Context mContext;
-    private AccessibilityService mService;
     private View mView, mBlankView;
-    private Vibrator mVibrator;
-    private int vibrator_val;
-    private SharedPreferences sharedPreferences;
-    public boolean isAppend = false;
+    private HorizontalListView listView;
+    private List<Program> list;
+    private ListAdapter adapter;
 
     public TaskBarView(Context context) {
         super(context);
     }
 
-    public TaskBarView(Context context, AccessibilityService service, Vibrator vibrator) {
+    public TaskBarView(Context context, AccessibilityService service) {
         super(context);
         mContext = context;
-        mService = service;
-        mVibrator = vibrator;
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         LayoutInflater.from(context).inflate(R.layout.point_simple, this);
         mView = findViewById(R.id.point_view);
         mBlankView = findViewById(R.id.blank_view);
+        listView= (HorizontalListView) findViewById(R.id.app_list);
         mView.getBackground().setAlpha(0);
-        //viewWidth = mView.getLayoutParams().width;
-        //viewHeight = mView.getLayoutParams().height;
-        sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
-        vibrator_val = sharedPreferences.getInt("vibrate", 0);
         mBlankView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,7 +105,7 @@ public class TaskBarView extends LinearLayout {
                 xInScreen = event.getRawX();
                 yInScreen = event.getRawY() - getStatusBarHeight();
                 // 手指移动的时候更新小悬浮窗的位置
-               
+
                 break;
             case MotionEvent.ACTION_UP:
                 // 如果手指离开屏幕时，xDownInScreen和xInScreen相等，且yDownInScreen和yInScreen相等，则视为触发了单击事件。
@@ -131,6 +116,10 @@ public class TaskBarView extends LinearLayout {
                 if (wlength < 200 && length > 0 && hlength > 40 && !isMove) {
                     Log.i("上划,y", "" + wlength + "/" + length);
                     updateViewSize();
+                    EasyTask easyTask=new EasyTask();
+                    list=easyTask.getRunningProcess(mContext);
+                    adapter=new ListAdapter(list,mContext);
+                    listView.setAdapter(adapter);
                 } else if (wlength < 200 && length < 0 && hlength > 40 && !isMove) {
                     Log.i("下划,y", "" + wlength + "/" + length);
                     // 模拟HOME键
@@ -138,17 +127,16 @@ public class TaskBarView extends LinearLayout {
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 如果是服务里调用，必须加入new task标识
                     i.addCategory(Intent.CATEGORY_HOME);
                     mContext.startActivity(i);
-                    mVibrator.vibrate(vibrator_val);
+
                 } else if (wlength < 40 && hlength < 40 && !isMove) {
                     Log.i("点击,x,y", "" + wlength + "/" + hlength);
-                    mService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
-                    mVibrator.vibrate(vibrator_val);
+
+
                 } else {
                     Log.i("x,y", "" + wlength + "/" + length);
                 }
                 mView.setBackgroundResource(R.drawable.shape);
-                int alpha = sharedPreferences.getInt("alpha", 50);
-                mView.getBackground().setAlpha(alpha);
+
                 break;
             default:
                 break;
@@ -167,29 +155,19 @@ public class TaskBarView extends LinearLayout {
         mParams = params;
     }
 
-    public void setVibrator_val(int value) {
-        vibrator_val = value;
-    }
-
-    /**
-     * 更新小圆点在屏幕中的位置。
-     */
-    private void updateViewPosition() {
-        mParams.x = (int) (xInScreen - xInView);
-        mParams.y = (int) (yInScreen - yInView);
-        windowManager.updateViewLayout(this, mParams);
-    }
 
     private void updateViewSize() {
-        Log.i("x,y", "updateViewSize");
+        Log.i("showInfo", "updateViewSize");
         mParams.height = MyWindowManager.screenHeight;
         mView.getLayoutParams().height = MyWindowManager.screenHeight / 4;
+        mView.setVisibility(VISIBLE);
         windowManager.updateViewLayout(this, mParams);
     }
 
     public void hideView() {
-        Log.i("x,y", "hideview");
+        Log.i("showInfo", "HideView");
         mParams.height = MyWindowManager.screenHeight / 30;
+        mView.setVisibility(INVISIBLE);
         mView.getLayoutParams().height = mParams.height;
         windowManager.updateViewLayout(this, mParams);
     }
