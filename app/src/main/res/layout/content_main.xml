@@ -20,28 +20,14 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="启动圆点"
+            android:text="@string/start"
             android:id="@+id/start_point"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="关闭圆点"
+            android:text="@string/stop"
             android:id="@+id/stop_point"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设置震动"
-            android:id="@+id/set_vibrate"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设透明度"
-            android:id="@+id/set_alpha"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="圆点大小"
-            android:id="@+id/set_size"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -58,15 +44,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="点击返回"/>
+            android:text="代替系统多任务处理"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="上划最近任务"/>
+            android:text="还在施工中"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="下划返回桌面"/>
+            android:text="进度还可以"/>
     </LinearLayout>
 
 </RelativeLayout>
