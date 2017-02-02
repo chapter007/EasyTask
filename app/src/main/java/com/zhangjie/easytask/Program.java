@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 public class Program {
     private Drawable icon;
     private String name;
+    private String PackageName;
 
     public Drawable getIcon(){
         return icon;
@@ -17,11 +18,19 @@ public class Program {
         this.icon=icon;
     }
 
+    public void setPackageName(String packageName) {
+        PackageName = packageName;
+    }
+
     public String getName(){
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPackageName() {
+        return PackageName;
     }
 }

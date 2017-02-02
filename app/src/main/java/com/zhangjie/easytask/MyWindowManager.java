@@ -37,7 +37,7 @@ public class MyWindowManager {
      * @param context
      *            必须为应用程序的Context.
      */
-    public static void createEasyPoint(Context context,AccessibilityService service,Vibrator vibrator) {
+    public static void createEasyPoint(Context context,AccessibilityService service) {
         WindowManager windowManager = getWindowManager(context);
         int screenWidth = windowManager.getDefaultDisplay().getWidth();
         screenHeight = windowManager.getDefaultDisplay().getHeight();

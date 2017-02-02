@@ -3,14 +3,18 @@ package com.zhangjie.easytask;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -18,6 +22,7 @@ import java.util.List;
  * Created by zhangjie on 2016/1/30.
  */
 public class TaskBarView extends LinearLayout {
+    private static final String TAG ="test";
     /**
      * 记录系统状态栏的高度
      */
@@ -61,6 +66,7 @@ public class TaskBarView extends LinearLayout {
     private HorizontalListView listView;
     private List<Program> list;
     private ListAdapter adapter;
+    private EasyTask easyTask;
 
     public TaskBarView(Context context) {
         super(context);
@@ -79,6 +85,14 @@ public class TaskBarView extends LinearLayout {
             @Override
             public void onClick(View view) {
                 hideView();
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Program app= (Program) adapterView.getItemAtPosition(i);
+                Log.i(TAG, "onItemClick: " + app.getPackageName());
+                startAPP(app.getPackageName());
             }
         });
     }
@@ -115,11 +129,9 @@ public class TaskBarView extends LinearLayout {
 
                 if (wlength < 200 && length > 0 && hlength > 40 && !isMove) {
                     Log.i("上划,y", "" + wlength + "/" + length);
-                    updateViewSize();
-                    EasyTask easyTask=new EasyTask();
-                    list=easyTask.getRunningProcess(mContext);
-                    adapter=new ListAdapter(list,mContext);
-                    listView.setAdapter(adapter);
+                    getAppInfo task=new getAppInfo();
+                    task.execute();
+
                 } else if (wlength < 200 && length < 0 && hlength > 40 && !isMove) {
                     Log.i("下划,y", "" + wlength + "/" + length);
                     // 模拟HOME键
@@ -145,6 +157,33 @@ public class TaskBarView extends LinearLayout {
         return false;
     }
 
+    private class getAppInfo extends AsyncTask<String,Integer,String>{
+
+        @Override
+        protected void onPreExecute() {
+            updateViewSize();
+            easyTask=new EasyTask();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            try {
+                list=easyTask.getRunningProcess(mContext);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            adapter=new ListAdapter(list,mContext);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            listView.setAdapter(adapter);
+            super.onPostExecute(s);
+        }
+    }
 
     /**
      * 将小圆点的参数传入，用于更新小圆点的位置。
@@ -155,6 +194,14 @@ public class TaskBarView extends LinearLayout {
         mParams = params;
     }
 
+    public void startAPP(String appPackageName){
+        try{
+            Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(appPackageName);
+            mContext.startActivity(intent);
+        }catch(Exception e){
+            Toast.makeText(mContext, "没有安装", Toast.LENGTH_LONG).show();
+        }
+    }
 
     private void updateViewSize() {
         Log.i("showInfo", "updateViewSize");
