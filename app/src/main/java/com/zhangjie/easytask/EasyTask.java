@@ -25,7 +25,7 @@ import java.util.TimerTask;
  */
 public class EasyTask extends AccessibilityService {
 
-    private static final String TAG ="EasyTask";
+    private static final String TAG = "EasyTask";
     private AccessibilityService service;
 
     @Override
@@ -69,10 +69,9 @@ public class EasyTask extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //计时器也销毁
         Log.i("destroy", "");
 
-        //关闭圆点
+        //关闭
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -89,43 +88,43 @@ public class EasyTask extends AccessibilityService {
 
         //获取包管理器，在这里主要通过包名获取程序的图标和程序名
         PackageManager pm = context.getPackageManager();
-
+        List<AppTimeSort> appList = handleList(run, pi, pm);
         List list = new ArrayList();
-        for (AndroidAppProcess ra : run) {
+        for (AppTimeSort ra : appList) {
             Program pr = new Program();
-            ApplicationInfo info=pi.getInfo(ra.getPackageName());
-            Stat stat=ra.stat();
-            if (info!=null){
-                Log.i(TAG, "getRunningProcess: "+stat.starttime());
-                System.out.println(info.loadLabel(pm).toString());
-                pr.setIcon(info.loadIcon(pm));
-                pr.setName(info.loadLabel(pm).toString());
-                pr.setPackageName(info.packageName);
-                list.add(pr);
-            }
+            System.out.println(ra.getName());
+            pr.setIcon(ra.getIcon());
+            pr.setName(ra.getName());
+            pr.setPackageName(ra.getPackageName());
+            list.add(pr);
+
         }
         return list;
     }
 
-    public List<AndroidAppProcess> handleList(List<AndroidAppProcess> runApp,PackagesInfo pi,PackageManager pm) throws IOException {
+    public List<AppTimeSort> handleList(List<AndroidAppProcess> runApp, PackagesInfo pi, PackageManager pm) throws IOException {
         //排序还有去重
-        List list = new ArrayList();
-        //list= Collections.sort(runApp,);
-        /*for (AndroidAppProcess ra : runApp) {
-            Program pr = new Program();
-            ApplicationInfo info=pi.getInfo(ra.getPackageName());
-            Stat stat=ra.stat();
-            long startTime=stat.starttime();
-            if (info!=null){
-                Log.i(TAG, "getRunningProcess: "+startTime);
+        //List list = new ArrayList();
+        List<AppTimeSort> appList = new ArrayList<>();
+
+        for (AndroidAppProcess ra : runApp) {
+            AppTimeSort app = new AppTimeSort();
+            ApplicationInfo info = pi.getInfo(ra.getPackageName());
+            Stat stat = ra.stat();
+            long startTime = stat.starttime();
+            if (info != null) {
+                Log.i(TAG, "handleList: " + stat.starttime());
                 System.out.println(info.loadLabel(pm).toString());
-                pr.setIcon(info.loadIcon(pm));
-                pr.setName(info.loadLabel(pm).toString());
-                pr.setPackageName(info.packageName);
-                list.add(pr);
+                app.setIcon(info.loadIcon(pm));
+                app.setName(info.loadLabel(pm).toString());
+                app.setPackageName(info.packageName);
+                app.setTime(startTime);
+                appList.add(app);
             }
-        }*/
-        return list;
+
+        }
+        Collections.reverse(appList);
+        return appList;
     }
 
     class RefreshTask extends TimerTask {
@@ -134,7 +133,7 @@ public class EasyTask extends AccessibilityService {
         public void run() {
 
             handler.post(new Runnable() {
-                public static final String TAG ="test";
+                public static final String TAG = "test";
 
                 @Override
                 public void run() {
