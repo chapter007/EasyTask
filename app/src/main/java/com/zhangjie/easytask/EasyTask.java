@@ -112,7 +112,7 @@ public class EasyTask extends AccessibilityService {
             ApplicationInfo info = pi.getInfo(ra.getPackageName());
             Stat stat = ra.stat();
             long startTime = stat.starttime();
-            if (info != null) {
+            if (info != null&&startTime>10000) {
                 Log.i(TAG, "handleList: " + stat.starttime());
                 app.setIcon(info.loadIcon(pm));
                 app.setName(info.loadLabel(pm).toString());
