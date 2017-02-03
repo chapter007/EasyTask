@@ -33,4 +33,16 @@ public class Program {
     public String getPackageName() {
         return PackageName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        Program app= (Program) o;
+        return name.equals(app.name);
+    }
+
+    @Override
+    public int hashCode() {
+        String in=name;
+        return in.hashCode();
+    }
 }

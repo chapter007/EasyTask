@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TimerTask;
 
 /**
@@ -82,7 +85,6 @@ public class EasyTask extends AccessibilityService {
 
     public List getRunningProcess(Context context) throws IOException {
         PackagesInfo pi = new PackagesInfo(context);
-        //ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         //获取正在运行的应用,run需要处理一下，排序还要过滤
         List<AndroidAppProcess> run = AndroidProcesses.getRunningAppProcesses();
 
@@ -97,16 +99,14 @@ public class EasyTask extends AccessibilityService {
             pr.setName(ra.getName());
             pr.setPackageName(ra.getPackageName());
             list.add(pr);
-
         }
+        list=removeDuplicate(list);
         return list;
     }
 
     public List<AppTimeSort> handleList(List<AndroidAppProcess> runApp, PackagesInfo pi, PackageManager pm) throws IOException {
         //排序还有去重
-        //List list = new ArrayList();
         List<AppTimeSort> appList = new ArrayList<>();
-
         for (AndroidAppProcess ra : runApp) {
             AppTimeSort app = new AppTimeSort();
             ApplicationInfo info = pi.getInfo(ra.getPackageName());
@@ -114,7 +114,6 @@ public class EasyTask extends AccessibilityService {
             long startTime = stat.starttime();
             if (info != null) {
                 Log.i(TAG, "handleList: " + stat.starttime());
-                System.out.println(info.loadLabel(pm).toString());
                 app.setIcon(info.loadIcon(pm));
                 app.setName(info.loadLabel(pm).toString());
                 app.setPackageName(info.packageName);
@@ -126,6 +125,18 @@ public class EasyTask extends AccessibilityService {
         Collections.reverse(appList);
         return appList;
     }
+
+    private List<Program> removeDuplicate(List<Program> list) {
+        Set<Program> set = new HashSet<Program>();
+        List<Program> newList = new ArrayList<Program>();
+        for (Iterator<Program> iter = list.iterator(); iter.hasNext();) {
+            Program element = (Program) iter.next();
+            if (set.add(element))
+                newList.add(element);
+        }
+        return newList;
+    }
+
 
     class RefreshTask extends TimerTask {
         //检测横屏隐藏圆点
