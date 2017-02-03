@@ -14,7 +14,9 @@ import com.jaredrummler.android.processes.models.AndroidAppProcess;
 import com.jaredrummler.android.processes.models.Stat;
 
 import java.io.IOException;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -92,9 +94,9 @@ public class EasyTask extends AccessibilityService {
         for (AndroidAppProcess ra : run) {
             Program pr = new Program();
             ApplicationInfo info=pi.getInfo(ra.getPackageName());
-
+            Stat stat=ra.stat();
             if (info!=null){
-                Log.i(TAG, "getRunningProcess: ");
+                Log.i(TAG, "getRunningProcess: "+stat.starttime());
                 System.out.println(info.loadLabel(pm).toString());
                 pr.setIcon(info.loadIcon(pm));
                 pr.setName(info.loadLabel(pm).toString());
@@ -108,7 +110,8 @@ public class EasyTask extends AccessibilityService {
     public List<AndroidAppProcess> handleList(List<AndroidAppProcess> runApp,PackagesInfo pi,PackageManager pm) throws IOException {
         //排序还有去重
         List list = new ArrayList();
-        for (AndroidAppProcess ra : runApp) {
+        //list= Collections.sort(runApp,);
+        /*for (AndroidAppProcess ra : runApp) {
             Program pr = new Program();
             ApplicationInfo info=pi.getInfo(ra.getPackageName());
             Stat stat=ra.stat();
@@ -121,7 +124,7 @@ public class EasyTask extends AccessibilityService {
                 pr.setPackageName(info.packageName);
                 list.add(pr);
             }
-        }
+        }*/
         return list;
     }
 

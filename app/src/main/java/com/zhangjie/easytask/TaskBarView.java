@@ -1,6 +1,7 @@
 package com.zhangjie.easytask;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -90,9 +91,20 @@ public class TaskBarView extends LinearLayout {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Program app= (Program) adapterView.getItemAtPosition(i);
+                Program app = (Program) adapterView.getItemAtPosition(i);
                 Log.i(TAG, "onItemClick: " + app.getPackageName());
                 startAPP(app.getPackageName());
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Program app = (Program) adapterView.getItemAtPosition(i);
+                Log.i(TAG, "onLongItemClick: " + app.getPackageName());
+                killAPP(app.getPackageName());
+                list.remove(i);
+                adapter.notifyDataSetChanged();
+                return false;
             }
         });
     }
@@ -198,6 +210,15 @@ public class TaskBarView extends LinearLayout {
         try{
             Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(appPackageName);
             mContext.startActivity(intent);
+        }catch(Exception e){
+            Toast.makeText(mContext, "没有安装", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void killAPP(String appPackageName){
+        try{
+            ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+            activityManager.killBackgroundProcesses(appPackageName);
         }catch(Exception e){
             Toast.makeText(mContext, "没有安装", Toast.LENGTH_LONG).show();
         }
