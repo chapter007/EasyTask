@@ -1,36 +1,24 @@
 package com.zhangjie.easytask;
 
-import android.accessibilityservice.AccessibilityServiceInfo;
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityManager;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private boolean isEnabled = true;
-    private SharedPreferences setting;
+    private static final String TAG ="Zhangjie";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, EasyTask.class);
                 startService(intent);
                 tip.setVisibility(View.VISIBLE);
+                Log.i(TAG, "onClick: test???");
             }
         });
         stop.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT > 22 && !Settings.canDrawOverlays(this)) {
             requestAlertWindowPermission();
         }
-        setting = getSharedPreferences("setting", MODE_PRIVATE);
 
     }
 

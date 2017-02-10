@@ -30,6 +30,8 @@ public class EasyTask extends AccessibilityService {
 
     private static final String TAG = "EasyTask";
     private AccessibilityService service;
+    private String[] black_list={"com.android.systemui","com.microvirt.memuime",
+            "com.teslacoilsw.launcher","com.android.defcontainer","com.android.phone","com.microvirt.market"};
 
     @Override
     public boolean onUnbind(Intent intent) {
@@ -94,7 +96,7 @@ public class EasyTask extends AccessibilityService {
         List list = new ArrayList();
         for (AppTimeSort ra : appList) {
             Program pr = new Program();
-            System.out.println(ra.getName());
+            //System.out.println(ra.getName());
             pr.setIcon(ra.getIcon());
             pr.setName(ra.getName());
             pr.setPackageName(ra.getPackageName());
@@ -112,8 +114,10 @@ public class EasyTask extends AccessibilityService {
             ApplicationInfo info = pi.getInfo(ra.getPackageName());
             Stat stat = ra.stat();
             long startTime = stat.starttime();
-            if (info != null&&startTime>10000) {
-                Log.i(TAG, "handleList: " + stat.starttime());
+
+
+            if ((info != null) &&!isHide(info)) {
+                Log.i(TAG, "handleList: " + info.packageName+"//ishide:");
                 app.setIcon(info.loadIcon(pm));
                 app.setName(info.loadLabel(pm).toString());
                 app.setPackageName(info.packageName);
@@ -154,5 +158,15 @@ public class EasyTask extends AccessibilityService {
 
 
         }
+    }
+
+
+    private boolean isHide(ApplicationInfo info){
+        boolean isHide=false;
+        for (int i=0;i<black_list.length;i++){
+            if (black_list[i].equals(info.packageName)) {isHide=true;break;}
+            else isHide=false;
+        }
+        return isHide;
     }
 }
