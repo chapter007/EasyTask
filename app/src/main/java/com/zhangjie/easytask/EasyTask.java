@@ -30,8 +30,8 @@ public class EasyTask extends AccessibilityService {
 
     private static final String TAG = "EasyTask";
     private AccessibilityService service;
-    private String[] block_list = {"com.android.systemui", "ime",
-            "com.android.launcher3", "com.android.defcontainer", "com.android.phone", "com.microvirt.market"};
+    private String[] block_list = {"systemui","ime","partnersetup","pico","push",
+            "launcher3", "defcontainer", "com.android.phone", "service"};
 
     @Override
     public boolean onUnbind(Intent intent) {

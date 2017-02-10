@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
  * Created by zhangjie on 2016/1/30.
  */
 public class TaskBarView extends LinearLayout {
-    private static final String TAG ="test";
+    private static final String TAG = "test";
     /**
      * 记录系统状态栏的高度
      */
@@ -68,6 +69,7 @@ public class TaskBarView extends LinearLayout {
     private List<Program> list;
     private ListAdapter adapter;
     private EasyTask easyTask;
+    private OutputStream outputStream = null;
 
     public TaskBarView(Context context) {
         super(context);
@@ -80,7 +82,7 @@ public class TaskBarView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.point_simple, this);
         mView = findViewById(R.id.point_view);
         mBlankView = findViewById(R.id.blank_view);
-        listView= (HorizontalListView) findViewById(R.id.app_list);
+        listView = (HorizontalListView) findViewById(R.id.app_list);
         mView.getBackground().setAlpha(0);
         mBlankView.setOnClickListener(new OnClickListener() {
             @Override
@@ -101,7 +103,8 @@ public class TaskBarView extends LinearLayout {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Program app = (Program) adapterView.getItemAtPosition(i);
                 Log.i(TAG, "onLongItemClick: " + app.getPackageName());
-                killAPP(app.getPackageName());
+                //killAPP(app.getPackageName());
+                killAppAdvance(app.getPackageName());
                 list.remove(i);
                 adapter.notifyDataSetChanged();
                 return false;
@@ -141,7 +144,7 @@ public class TaskBarView extends LinearLayout {
 
                 if (wlength < 200 && length > 0 && hlength > 40 && !isMove) {
                     Log.i("上划,y", "" + wlength + "/" + length);
-                    getAppInfo task=new getAppInfo();
+                    getAppInfo task = new getAppInfo();
                     task.execute();
 
                 } else if (wlength < 200 && length < 0 && hlength > 40 && !isMove) {
@@ -169,12 +172,12 @@ public class TaskBarView extends LinearLayout {
         return false;
     }
 
-    private class getAppInfo extends AsyncTask<String,Integer,String>{
+    private class getAppInfo extends AsyncTask<String, Integer, String> {
 
         @Override
         protected void onPreExecute() {
             updateViewSize();
-            easyTask=new EasyTask();
+            easyTask = new EasyTask();
             super.onPreExecute();
         }
 
@@ -182,11 +185,11 @@ public class TaskBarView extends LinearLayout {
         protected String doInBackground(String... strings) {
 
             try {
-                list=easyTask.getRunningProcess(mContext);
+                list = easyTask.getRunningProcess(mContext);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            adapter=new ListAdapter(list,mContext);
+            adapter = new ListAdapter(list, mContext);
             return null;
         }
 
@@ -206,22 +209,39 @@ public class TaskBarView extends LinearLayout {
         mParams = params;
     }
 
-    public void startAPP(String appPackageName){
-        try{
+    public void startAPP(String appPackageName) {
+        try {
             Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(appPackageName);
             mContext.startActivity(intent);
-        }catch(Exception e){
+        } catch (Exception e) {
             Toast.makeText(mContext, "没有安装", Toast.LENGTH_LONG).show();
         }
     }
 
-    public void killAPP(String appPackageName){
-        try{
+    public void killAPP(String appPackageName) {
+        try {
             ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
             activityManager.killBackgroundProcesses(appPackageName);
-        }catch(Exception e){
+        } catch (Exception e) {
             Toast.makeText(mContext, "没有安装", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void killAppAdvance(String appPackageName) {
+        String enable="pm enable "+appPackageName+"\n";
+        String disable="pm disable "+appPackageName+"\n";
+        try {
+            if (outputStream == null) {
+                outputStream = Runtime.getRuntime().exec("su").getOutputStream();
+            }
+            outputStream.write(disable.getBytes());
+            outputStream.write(enable.getBytes());
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private void updateViewSize() {
