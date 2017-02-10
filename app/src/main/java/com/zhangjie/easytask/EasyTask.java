@@ -30,8 +30,8 @@ public class EasyTask extends AccessibilityService {
 
     private static final String TAG = "EasyTask";
     private AccessibilityService service;
-    private String[] black_list={"com.android.systemui","com.microvirt.memuime",
-            "com.teslacoilsw.launcher","com.android.defcontainer","com.android.phone","com.microvirt.market"};
+    private String[] block_list = {"com.android.systemui", "ime",
+            "com.android.launcher3", "com.android.defcontainer", "com.android.phone", "com.microvirt.market"};
 
     @Override
     public boolean onUnbind(Intent intent) {
@@ -102,7 +102,7 @@ public class EasyTask extends AccessibilityService {
             pr.setPackageName(ra.getPackageName());
             list.add(pr);
         }
-        list=removeDuplicate(list);
+        list = removeDuplicate(list);
         return list;
     }
 
@@ -116,8 +116,8 @@ public class EasyTask extends AccessibilityService {
             long startTime = stat.starttime();
 
 
-            if ((info != null) &&!isHide(info)) {
-                Log.i(TAG, "handleList: " + info.packageName+"//ishide:");
+            if ((info != null) && !isHide(info)) {
+                Log.i(TAG, "handleList: " + info.packageName);
                 app.setIcon(info.loadIcon(pm));
                 app.setName(info.loadLabel(pm).toString());
                 app.setPackageName(info.packageName);
@@ -133,7 +133,7 @@ public class EasyTask extends AccessibilityService {
     private List<Program> removeDuplicate(List<Program> list) {
         Set<Program> set = new HashSet<Program>();
         List<Program> newList = new ArrayList<Program>();
-        for (Iterator<Program> iter = list.iterator(); iter.hasNext();) {
+        for (Iterator<Program> iter = list.iterator(); iter.hasNext(); ) {
             Program element = (Program) iter.next();
             if (set.add(element))
                 newList.add(element);
@@ -161,11 +161,13 @@ public class EasyTask extends AccessibilityService {
     }
 
 
-    private boolean isHide(ApplicationInfo info){
-        boolean isHide=false;
-        for (int i=0;i<black_list.length;i++){
-            if (black_list[i].equals(info.packageName)) {isHide=true;break;}
-            else isHide=false;
+    private boolean isHide(ApplicationInfo info) {
+        boolean isHide = false;
+        for (int i = 0; i < block_list.length; i++) {
+            if (info.packageName.contains(block_list[i])) {
+                isHide = true;
+                break;
+            } else isHide = false;
         }
         return isHide;
     }
