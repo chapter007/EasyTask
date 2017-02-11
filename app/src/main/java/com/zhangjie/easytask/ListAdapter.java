@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,7 +45,7 @@ public class ListAdapter extends BaseAdapter{
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder holder;
+        ViewHolder holder = null;
         if (view==null){
             layoutInflater=LayoutInflater.from(context);
             view=layoutInflater.inflate(R.layout.list_item, null);
@@ -51,19 +53,24 @@ public class ListAdapter extends BaseAdapter{
             holder.icon= (ImageView) view.findViewById(R.id.app_icon);
             holder.name= (TextView) view.findViewById(R.id.app_name);
             view.setTag(holder);
+        }else if(((ViewHolder)view.getTag()).needInflate){
+            view=layoutInflater.inflate(R.layout.list_item,viewGroup,false);
+
         }else {
             holder= (ViewHolder) view.getTag();
         }
         final Program program=list.get(i);
         holder.name.setText(program.getName());
-        //Log.i(TAG, "getView: "+program.getName());
         holder.icon.setImageDrawable(program.getIcon());
 
         return view;
     }
 
+
+
     class ViewHolder{
         TextView name;
         ImageView icon;
+        boolean needInflate;
     }
 }
