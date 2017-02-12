@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, EasyTask.class);
                 startService(intent);
                 tip.setVisibility(View.VISIBLE);
-                Log.i(TAG, "onClick: test???");
             }
         });
         stop.setOnClickListener(new View.OnClickListener() {
