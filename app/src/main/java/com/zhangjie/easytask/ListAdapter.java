@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,7 +45,7 @@ public class ListAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
         ViewHolder holder = null;
         if (view==null){
             layoutInflater=LayoutInflater.from(context);
@@ -52,6 +53,7 @@ public class ListAdapter extends BaseAdapter{
             holder=new ViewHolder();
             holder.icon= (ImageView) view.findViewById(R.id.app_icon);
             holder.name= (TextView) view.findViewById(R.id.app_name);
+            holder.kill= (ImageButton) view.findViewById(R.id.kill_app);
             view.setTag(holder);
         }else if(((ViewHolder)view.getTag()).needInflate){
             view=layoutInflater.inflate(R.layout.list_item,viewGroup,false);
@@ -62,7 +64,13 @@ public class ListAdapter extends BaseAdapter{
         final Program program=list.get(i);
         holder.name.setText(program.getName());
         holder.icon.setImageDrawable(program.getIcon());
-
+        final View finalView = view;
+        holder.kill.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteCell(finalView,i);
+            }
+        });
         return view;
     }
 
@@ -91,7 +99,7 @@ public class ListAdapter extends BaseAdapter{
         Animation anim = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if (interpolatedTime == 1) {
+                if (interpolatedTime == 0) {
                     v.setVisibility(View.GONE);
                 }
                 else {
@@ -116,6 +124,7 @@ public class ListAdapter extends BaseAdapter{
     class ViewHolder{
         TextView name;
         ImageView icon;
+        ImageButton kill;
         boolean needInflate;
     }
 }

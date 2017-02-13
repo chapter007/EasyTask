@@ -92,14 +92,14 @@ public class TaskBarView extends LinearLayout {
                 hideView();
             }
         });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Program app = (Program) adapterView.getItemAtPosition(i);
                 Log.i(TAG, "onItemClick: " + app.getPackageName());
                 startAPP(app.getPackageName());
             }
-        });
+        });*/
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
