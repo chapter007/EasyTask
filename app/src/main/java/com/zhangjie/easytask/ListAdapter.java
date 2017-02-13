@@ -81,10 +81,10 @@ public class ListAdapter extends BaseAdapter{
             public void onAnimationEnd(Animation arg0) {
                 list.remove(index);
 
-                /*ListAdapter.ViewHolder vh = (ListAdapter.ViewHolder)v.getTag();
-                vh.needInflate = true;*/
+                ListAdapter.ViewHolder vh = (ListAdapter.ViewHolder)v.getTag();
+                vh.needInflate = true;
 
-                //adapter.notifyDataSetChanged();
+                notifyDataSetChanged();
             }
             @Override public void onAnimationRepeat(Animation animation) {}
             @Override public void onAnimationStart(Animation animation) {}
@@ -94,16 +94,16 @@ public class ListAdapter extends BaseAdapter{
     }
 
     private void collapse(final View v, Animation.AnimationListener al) {
-        final int initialHeight = v.getMeasuredHeight();
+        final int initialWidth = v.getMeasuredWidth();
 
         Animation anim = new Animation() {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if (interpolatedTime == 0) {
+                if (interpolatedTime == 1) {
                     v.setVisibility(View.GONE);
                 }
                 else {
-                    v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
+                    v.getLayoutParams().height = initialWidth - (int)(initialWidth * interpolatedTime);
                     v.requestLayout();
                 }
             }
@@ -117,7 +117,7 @@ public class ListAdapter extends BaseAdapter{
         if (al!=null) {
             anim.setAnimationListener(al);
         }
-        anim.setDuration(300);
+        anim.setDuration(1000);
         v.startAnimation(anim);
     }
 
