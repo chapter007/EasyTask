@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +28,7 @@ public class ListAdapter extends BaseAdapter{
     private Context context;
     private float xInView,yInView,xDownInScreen,yDownInScreen,xInScreen,yInScreen;
     private OutputStream outputStream = null;
+    private TranslateAnimation mHiddenAction;
 
     public ListAdapter(List<Program> list,Context context){
         this.list=list;
@@ -64,6 +67,11 @@ public class ListAdapter extends BaseAdapter{
         final Program program=list.get(i);
         holder.name.setText(program.getName());
         holder.icon.setImageDrawable(program.getIcon());
+        mHiddenAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                -1.0f);
+        mHiddenAction.setDuration(200);
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -91,6 +99,9 @@ public class ListAdapter extends BaseAdapter{
                         if (wlength < 200 && length > 0 && hlength > 40) {
                             Log.i("上划,y", "" + wlength + "/" + length);
                             killAppAdvance(program.getPackageName());
+                            view.startAnimation(mHiddenAction);
+                            view.setVisibility(View.GONE);
+                            
                             list.remove(i);
                             notifyDataSetChanged();
                         }
