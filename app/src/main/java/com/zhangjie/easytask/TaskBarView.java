@@ -71,7 +71,7 @@ public class TaskBarView extends LinearLayout {
     private List<Program> list;
     private ListAdapter adapter;
     private EasyTask easyTask;
-    private OutputStream outputStream = null;
+
 
     public TaskBarView(Context context) {
         super(context);
@@ -92,27 +92,28 @@ public class TaskBarView extends LinearLayout {
                 hideView();
             }
         });
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Program app = (Program) adapterView.getItemAtPosition(i);
                 Log.i(TAG, "onItemClick: " + app.getPackageName());
                 startAPP(app.getPackageName());
             }
-        });*/
+        });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Program app = (Program) adapterView.getItemAtPosition(i);
                 Log.i(TAG, "onLongItemClick: " + app.getPackageName());
                 //killAPP(app.getPackageName());
-                killAppAdvance(app.getPackageName());
+
 
                 list.remove(i);
                 adapter.notifyDataSetChanged();
                 return false;
             }
         });
+
     }
 
     boolean isMove = false;
@@ -231,22 +232,7 @@ public class TaskBarView extends LinearLayout {
         }
     }
 
-    public void killAppAdvance(String appPackageName) {
-        String enable="pm enable "+appPackageName+"\n";
-        String disable="pm disable "+appPackageName+"\n";
-        try {
-            if (outputStream == null) {
-                outputStream = Runtime.getRuntime().exec("su").getOutputStream();
-            }
-            outputStream.write(disable.getBytes());
-            outputStream.write(enable.getBytes());
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-
-    }
 
     private void updateViewSize() {
         Log.i("showInfo", "updateViewSize");
